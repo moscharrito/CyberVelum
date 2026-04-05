@@ -92,13 +92,35 @@ if (contactForm) {
   contactForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const btn = contactForm.querySelector('button[type="submit"]');
-    btn.textContent = 'Message Sent!';
-    btn.style.background = '#22c55e';
-    setTimeout(() => {
-      btn.textContent = 'Send Message →';
-      btn.style.background = '';
-      contactForm.reset();
-    }, 3000);
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+
+    const formData = new FormData(contactForm);
+
+    fetch('https://formsubmit.co/ajax/info@cybervelum.com', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      btn.textContent = 'Message Sent!';
+      btn.style.background = '#22c55e';
+      setTimeout(() => {
+        btn.innerHTML = 'Send Message <span class="arrow">&rarr;</span>';
+        btn.style.background = '';
+        btn.disabled = false;
+        contactForm.reset();
+      }, 3000);
+    })
+    .catch(error => {
+      btn.textContent = 'Failed — Please Try Again';
+      btn.style.background = '#ef4444';
+      btn.disabled = false;
+      setTimeout(() => {
+        btn.innerHTML = 'Send Message <span class="arrow">&rarr;</span>';
+        btn.style.background = '';
+      }, 3000);
+    });
   });
 }
 
